@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>TinyLink Stats</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+  <script>
+    // Extract code from URL /code/:code
+    const codeFromPath = location.pathname.split("/").pop();
+    window.__BASE_URL__ = "{{BASE_URL_PLACEHOLDER}}";
+  </script>
+</head>
+<body data-page="stats" data-code="">
+  <div class="container">
+    <div class="header">
+      <h1>TinyLink</h1>
+      <div class="badge">Stats</div>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="stats"></div>
+  </div>
+
+  <script>
+    // Push code into body attribute for app.js consumption
+    document.body.setAttribute("data-code", codeFromPath);
+  </script>
+  <script src="/app.js"></script>
+</body>
+</html>

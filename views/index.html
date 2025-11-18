@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>TinyLink Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+  <script>
+    window.__BASE_URL__ = "{{BASE_URL_PLACEHOLDER}}";
+  </script>
+</head>
+<body data-page="dashboard">
+  <div class="container">
+    <div class="header">
+      <h1>TinyLink</h1>
+      <div class="badge">Dashboard</div>
+    </div>
+
+    <div class="panel" style="margin-bottom:12px;">
+      <form id="createForm">
+        <div class="form-row">
+          <input id="url" class="input" type="url" placeholder="https://example.com/docs" required />
+          <input id="code" class="input" type="text" placeholder="Custom code (A-Za-z0-9, 6–8)" />
+          <button id="createBtn" class="button" type="submit">Create</button>
+        </div>
+        <div id="status" class="status"></div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+        <input id="filter" class="input" placeholder="Search by code or URL" />
+        <select id="sort" class="input" style="max-width:240px;">
+          <option value="created_at:desc">Newest</option>
+          <option value="created_at:asc">Oldest</option>
+          <option value="code:asc">Code A→Z</option>
+          <option value="code:desc">Code Z→A</option>
+          <option value="clicks:desc">Clicks high→low</option>
+          <option value="clicks:asc">Clicks low→high</option>
+        </select>
+      </div>
+
+      <div id="loading" class="status">Loading...</div>
+      <div id="empty" class="status" style="display:none;">No links yet. Create one above.</div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Short code</th>
+            <th>Target URL</th>
+            <th>Total clicks</th>
+            <th>Last clicked time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <span>Health: <a href="/healthz" style="color:var(--accent)">/healthz</a></span>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
