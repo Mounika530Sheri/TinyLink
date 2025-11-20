@@ -1,5 +1,7 @@
+// backend/routes.js
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const pool = require("./db");
 const { isValidUrl, isValidCode, genCode } = require("./validators");
 
@@ -10,14 +12,24 @@ router.get("/healthz", (_req, res) => {
   res.status(200).json({ ok: true, version: "1.0" });
 });
 
-// Dashboard page
-router.get("/", (_req, res) => {
-  res.sendFile(path.join(__dirname, "views", "index.html"));
+// Serve dashboard (inject BASE_URL)
+router.get("/", (req, res) => {
+  const file = path.join(__dirname, "../frontend/views/index.html");
+  let html = fs.readFileSync(file, "utf8");
+  const BASE_URL = process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
+  html = html.replace(/{{BASE_URL_PLACEHOLDER}}/g, BASE_URL);
+  res.send(html);
 });
 
-// Stats page
-router.get("/code/:code", (_req, res) => {
-  res.sendFile(path.join(__dirname, "views", "stats.html"));
+// Serve stats page (inject BASE_URL and code placeholder as data attribute)
+router.get("/code/:code", (req, res) => {
+  const file = path.join(__dirname, "../frontend/views/stats.html");
+  let html = fs.readFileSync(file, "utf8");
+  const BASE_URL = process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
+  html = html.replace(/{{BASE_URL_PLACEHOLDER}}/g, BASE_URL);
+  // also replace the data-code placeholder with actual code for the page
+  html = html.replace(/{{CODE_PLACEHOLDER}}/g, req.params.code);
+  res.send(html);
 });
 
 // Create link
@@ -35,8 +47,8 @@ router.post("/api/links", async (req, res) => {
   try {
     // If code not provided, generate a unique one
     if (!code) {
-      // Try up to 5 times to avoid collision
-      for (let i = 0; i < 5; i++) {
+      // Try up to 6 times to avoid collision
+      for (let i = 0; i < 6; i++) {
         const candidate = genCode(7);
         const exists = await pool.query("SELECT 1 FROM links WHERE code=$1", [candidate]);
         if (exists.rowCount === 0) {
@@ -49,7 +61,7 @@ router.post("/api/links", async (req, res) => {
       }
     }
 
-    // Enforce global uniqueness for custom codes
+    // Enforce uniqueness
     const existing = await pool.query("SELECT 1 FROM links WHERE code=$1", [code]);
     if (existing.rowCount > 0) {
       return res.status(409).json({ error: "Code already exists" });

@@ -6,26 +6,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="/style.css" />
   <script>
-    // Extract code from URL /code/:code
-    const codeFromPath = location.pathname.split("/").pop();
     window.__BASE_URL__ = "{{BASE_URL_PLACEHOLDER}}";
   </script>
 </head>
-<body data-page="stats" data-code="">
+<body data-page="stats" data-code="{{CODE_PLACEHOLDER}}">
   <div class="container">
     <div class="header">
       <h1>TinyLink</h1>
       <div class="badge">Stats</div>
     </div>
 
-    <div id="status" class="status"></div>
-    <div id="stats"></div>
+    <div id="stats" class="panel">
+      <div id="status" class="status">Loading stats...</div>
+    </div>
+
+    <div class="footer">
+      <span>Health: <a href="/healthz" style="color:var(--accent)">/healthz</a></span>
+    </div>
   </div>
 
-  <script>
-    // Push code into body attribute for app.js consumption
-    document.body.setAttribute("data-code", codeFromPath);
-  </script>
   <script src="/app.js"></script>
 </body>
 </html>

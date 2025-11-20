@@ -1,3 +1,4 @@
+// backend/validator.js
 // Basic URL validation with URL constructor and protocol check
 function isValidUrl(input) {
   try {

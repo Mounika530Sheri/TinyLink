@@ -1,3 +1,4 @@
+// frontend/public/app.js
 const BASE_URL = window.__BASE_URL__ || location.origin;
 
 const state = {
@@ -76,12 +77,14 @@ async function loadLinks() {
   const empty = document.getElementById("empty");
   const loading = document.getElementById("loading");
 
+  if (!tableBody) return;
   tableBody.innerHTML = "";
   empty.style.display = "none";
   loading.style.display = "block";
 
   try {
     const res = await fetch("/api/links");
+    if (!res.ok) throw new Error("Failed to fetch");
     const data = await res.json();
 
     // Filter
@@ -109,7 +112,7 @@ async function loadLinks() {
     }
 
     for (const l of filtered) {
-      const shortUrl = `${BASE_URL}/${l.code}`;
+      const shortUrl = `${BASE_URL.replace(/\/$/, "")}/${l.code}`;
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><a href="/code/${l.code}"><strong>${l.code}</strong></a><button class="copy" data-copy="${shortUrl}">Copy</button></td>
@@ -153,7 +156,8 @@ async function loadLinks() {
         }
       });
     });
-  } catch {
+  } catch (err) {
+    console.error(err);
     setStatus("Failed to load links.", "err");
   } finally {
     loading.style.display = "none";
@@ -161,16 +165,24 @@ async function loadLinks() {
 }
 
 function initDashboard() {
-  document.getElementById("createForm").addEventListener("submit", createLink);
-  document.getElementById("filter").addEventListener("input", (e) => {
-    state.filter = e.target.value;
-    loadLinks();
-  });
-  document.getElementById("sort").addEventListener("change", (e) => {
-    const [field, dir] = e.target.value.split(":");
-    state.sort = { field, dir };
-    loadLinks();
-  });
+  const createForm = document.getElementById("createForm");
+  if (createForm) createForm.addEventListener("submit", createLink);
+  const filter = document.getElementById("filter");
+  if (filter) {
+    filter.addEventListener("input", (e) => {
+      state.filter = e.target.value;
+      // debounce could be added but OK for small datasets
+      loadLinks();
+    });
+  }
+  const sort = document.getElementById("sort");
+  if (sort) {
+    sort.addEventListener("change", (e) => {
+      const [field, dir] = e.target.value.split(":");
+      state.sort = { field, dir };
+      loadLinks();
+    });
+  }
   loadLinks();
 }
 
@@ -178,6 +190,8 @@ function initDashboard() {
 async function initStats(code) {
   const container = document.getElementById("stats");
   const status = document.getElementById("status");
+
+  if (!status || !container) return;
 
   status.textContent = "Loading stats...";
   status.className = "status";
@@ -190,8 +204,9 @@ async function initStats(code) {
       container.innerHTML = "";
       return;
     }
+    if (!res.ok) throw new Error("Failed to fetch");
     const l = await res.json();
-    const shortUrl = `${BASE_URL}/${l.code}`;
+    const shortUrl = `${BASE_URL.replace(/\/$/, "")}/${l.code}`;
     container.innerHTML = `
       <div class="panel">
         <h2>Code: <span class="badge">${l.code}</span></h2>
@@ -232,7 +247,8 @@ async function initStats(code) {
     });
     status.textContent = "Loaded.";
     status.className = "status ok";
-  } catch {
+  } catch (err) {
+    console.error(err);
     status.textContent = "Failed to load stats.";
     status.className = "status err";
   }

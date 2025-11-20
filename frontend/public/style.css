@@ -13,7 +13,7 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -83,11 +83,17 @@ body {
   background: transparent;
   border: 1px solid var(--accent);
   color: var(--accent);
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
 }
 
 .button-danger {
   background: var(--danger);
   border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: white;
 }
 
 .table {
@@ -129,6 +135,8 @@ body {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
+  padding: 4px 8px;
+  border-radius: 8px;
 }
 
 .status {
